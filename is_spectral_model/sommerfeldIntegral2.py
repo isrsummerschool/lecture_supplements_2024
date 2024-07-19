@@ -11,7 +11,7 @@ import logging
 import scipy, scipy.special,numpy
 import time
 
-pi = scipy.pi
+pi = numpy.pi
 
 def sommerfeldIntegralM(funct,x,a,bs=1.0,Ns=10,Nmax=1e4,Nmin=10,tol=1e-6,maxLoops=100,additParams=()):
 
