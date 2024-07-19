@@ -98,7 +98,7 @@ class ISspec:
                 raise
                           
             if key in ('ni','ti','vi','nuin','nuii'):
-                self.Params[key] = scipy.array(newParms[key])
+                self.Params[key] = numpy.array(newParms[key])
             else:
                 self.Params[key] = newParms[key]
                          
@@ -144,7 +144,7 @@ class ISspec:
             raise
            
         try: 
-            self.mi_amu = scipy.array(input['mi'])
+            self.mi_amu = numpy.array(input['mi'])
             self.mi=self.mi_amu*scipy.constants.atomic_mass
         except Exception as e:
             self.logger.error("input dict must include mi")
@@ -179,14 +179,14 @@ class ISspec:
             self.Params['ne'] = 0.0
             
         try: 
-            self.Params['ti'] = scipy.array(input['ti'])
+            self.Params['ti'] = numpy.array(input['ti'])
         except:
-            self.Params['ti'] = scipy.zeros(self.mi.shape)
+            self.Params['ti'] = numpy.zeros(self.mi.shape)
             
         try: 
-            self.Params['ni'] = scipy.array(input['ni'])
+            self.Params['ni'] = numpy.array(input['ni'])
         except:
-            self.Params['ni'] = scipy.zeros(self.mi.shape)
+            self.Params['ni'] = numpy.zeros(self.mi.shape)
             self.Params['ni'][0] = 1.0
 
         try: 
@@ -195,7 +195,7 @@ class ISspec:
             self.Params['ve'] = 0.0
 
         try: 
-            self.Params['vi'] = scipy.array(input['vi'])
+            self.Params['vi'] = numpy.array(input['vi'])
         except:
             self.Params['vi'] = scipy.zeros(self.mi.shape)
 
@@ -205,7 +205,7 @@ class ISspec:
             self.Params['nuen'] = 0.0
 
         try: 
-            self.Params['nuin'] = scipy.array(input['nuin'])
+            self.Params['nuin'] = numpy.array(input['nuin'])
         except:
             self.Params['nuin'] = scipy.zeros(self.mi.shape)                   
 
