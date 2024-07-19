@@ -71,7 +71,7 @@ def sommerfeldIntegralM(funct,x,a,bs=1.0,Ns=10,Nmax=1e4,Nmin=10,tol=1e-6,maxLoop
             break   
                 
         #
-        h = 1.0/N*scipy.log(1.05*numpy.sqrt(2.0*N))    
+        h = 1.0/N*numpy.log(1.05*numpy.sqrt(2.0*N))    
         n = numpy.arange(-N,N+1)
 
         #
