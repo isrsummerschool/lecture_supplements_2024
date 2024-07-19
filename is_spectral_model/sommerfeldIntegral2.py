@@ -71,12 +71,12 @@ def sommerfeldIntegralM(funct,x,a,bs=1.0,Ns=10,Nmax=1e4,Nmin=10,tol=1e-6,maxLoop
             break   
                 
         #
-        h = 1.0/N*scipy.log(1.05*scipy.sqrt(2.0*N))    
-        n = scipy.arange(-N,N+1)
+        h = 1.0/N*scipy.log(1.05*numpy.sqrt(2.0*N))    
+        n = numpy.arange(-N,N+1)
 
         #
-        An = scipy.cosh(n*h)*scipy.exp(-scipy.power(scipy.sinh(n*h),2.0))
-        inval = 0.5*(b+a)+0.5*(b-a)*scipy.special.erf(scipy.sinh(n*h))
+        An = numpy.cosh(n*h)*numpy.exp(-numpy.power(numpy.sinh(n*h),2.0))
+        inval = 0.5*(b+a)+0.5*(b-a)*scipy.special.erf(numpy.sinh(n*h))
 
         # integrand evaluation
         f = funct(inval,additParams)
@@ -87,13 +87,13 @@ def sommerfeldIntegralM(funct,x,a,bs=1.0,Ns=10,Nmax=1e4,Nmin=10,tol=1e-6,maxLoop
             # refine end value of integral 
             # note this is adjusted in each iteration by boundsScalar 
 
-            if scipy.mean(f[-Nmin:])>initAssymFuncVal:
+            if numpy.mean(f[-Nmin:])>initAssymFuncVal:
                 b*=2
                 continue
             
             # after that, refine number of points to capture variation
             # note this is adjusted in each iteration by npointsScalar 
-            if scipy.absolute(scipy.diff(f)).max()>initFuncDiffVal:
+            if numpy.absolute(numpy.diff(f)).max()>initFuncDiffVal:
                 N=N*2
                 continue
 
@@ -102,19 +102,19 @@ def sommerfeldIntegralM(funct,x,a,bs=1.0,Ns=10,Nmax=1e4,Nmin=10,tol=1e-6,maxLoop
 
         # matrix Nx rows by N cols
         
-        x1 = scipy.dot(inval[:,scipy.newaxis],x[scipy.newaxis,:])
+        x1 = numpy.dot(inval[:,numpy.newaxis],x[numpy.newaxis,:])
 
-        fkern = scipy.exp(-1.0j*x1)
+        fkern = numpy.exp(-1.0j*x1)
 
         #
-        S = h*(b-a)/scipy.sqrt(pi)*scipy.dot(Amat,fkern)
+        S = h*(b-a)/numpy.sqrt(pi)*numpy.dot(Amat,fkern)
         
         # compute mean squared error
-        ds = scipy.sum(scipy.power(scipy.absolute((S - Sp)/Sp),2.0))/Nx
+        ds = numpy.sum(numpy.power(numpy.absolute((S - Sp)/Sp),2.0))/Nx
         
 
         # compute maximum absolute error
-        # ds = scipy.absolute((S - Sp))/scipy.absolute(Sp)
+        # ds = numpy.absolute((S - Sp))/numpy.absolute(Sp)
         # ds = ds.max()
         
         if ds<tol:
@@ -143,17 +143,17 @@ def sommerfeldIntegral(funct,x,a,bs=1.0,Ns=10,Nmax=1e4,tol=1e-6,maxLoops=100,add
     Sp = 1e10
     while 1:
                 
-        h = 1.0/N*scipy.log(1.05*scipy.sqrt(2.0)*N)    
-        n = scipy.arange(-N,N+1)
+        h = 1.0/N*numpy.log(1.05*numpy.sqrt(2.0)*N)    
+        n = numpy.arange(-N,N+1)
         
-        An = scipy.cosh(n*h)*scipy.exp(-scipy.power(scipy.sinh(n*h),2.0))
-        inval = 0.5*(b+a)+0.5*(b-a)*scipy.special.erf(scipy.sinh(n*h))
+        An = numpy.cosh(n*h)*numpy.exp(-numpy.power(numpy.sinh(n*h),2.0))
+        inval = 0.5*(b+a)+0.5*(b-a)*scipy.special.erf(numpy.sinh(n*h))
         
-        f=funct(inval,additParams)*scipy.exp(-1.0j*x*inval)
+        f=funct(inval,additParams)*numpy.exp(-1.0j*x*inval)
 
-        S = h*(b-a)/scipy.sqrt(pi)*scipy.sum(An*f)
+        S = h*(b-a)/numpy.sqrt(pi)*numpy.sum(An*f)
 
-        ds = scipy.absolute(S-Sp)/scipy.absolute(Sp)
+        ds = numpy.absolute(S-Sp)/numpy.absolute(Sp)
                 
         if ds<tol:
             flag=1
@@ -173,7 +173,7 @@ def sommerfeldIntegral(funct,x,a,bs=1.0,Ns=10,Nmax=1e4,tol=1e-6,maxLoops=100,add
 
 def funcEg(k,a):
         
-    return scipy.exp(-k**2.0/2)
+    return numpy.exp(-k**2.0/2)
 
 if __name__ == "__main__":
     '''
@@ -182,8 +182,8 @@ if __name__ == "__main__":
 
     # test 1
     
-    x = scipy.arange(2)                
+    x = numpy.arange(2)                
     out, flag, loop = sommerfeldIntegralM(funcEg,x,0.0,bs=1.0,Ns=10,Nmax=1e4,tol=1e-6)
-    print(out[1].real*2.0/scipy.sqrt(2.0*pi) - scipy.exp(-0.5))
+    print(out[1].real*2.0/numpy.sqrt(2.0*pi) - numpy.exp(-0.5))
     
     print(out)

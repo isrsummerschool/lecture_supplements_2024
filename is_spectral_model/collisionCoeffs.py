@@ -7,7 +7,7 @@ M Nicolls - 2013
 
 """
 
-import scipy
+import numpy
 
 # getBst
 def getBst(s,t):
@@ -68,16 +68,16 @@ def getCin(i,n,Ti=1000.0,Tn=1000.0):
 
     # resonant
     Tr = (Ti+Tn)/2.0
-    HpH = 2.65*Tr**0.5*(1.0-0.083*scipy.log10(Tr))**2.0
-    HpO = 0.661*Ti**0.5*(1.0-0.047*scipy.log10(Ti))**2.0
-    HepHe = 0.873*Tr**0.5*(1.0-0.093*scipy.log10(Tr))**2.0
-    NpN = 0.383*Tr**0.5*(1.0-0.063*scipy.log10(Tr))**2.0
-    OpH = 0.661*Ti**0.5*(1.0-0.047*scipy.log10(Ti))**2.0
-    OpO = 0.367*Tr**0.5*(1.0-0.064*scipy.log10(Tr))**2.0
-    COpCO = 0.342*Tr**0.5*(1.0-0.085*scipy.log10(Tr))**2.0
-    N2pN2 = 0.514*Tr**0.5*(1.0-0.073*scipy.log10(Tr))**2.0
-    O2pO2 = 0.259*Tr**0.5*(1.0-0.063*scipy.log10(Tr))**2.0
-    CO2pCO2 = 0.285*Tr**0.5*(1.0-0.083*scipy.log10(Tr))**2.0
+    HpH = 2.65*Tr**0.5*(1.0-0.083*numpy.log10(Tr))**2.0
+    HpO = 0.661*Ti**0.5*(1.0-0.047*numpy.log10(Ti))**2.0
+    HepHe = 0.873*Tr**0.5*(1.0-0.093*numpy.log10(Tr))**2.0
+    NpN = 0.383*Tr**0.5*(1.0-0.063*numpy.log10(Tr))**2.0
+    OpH = 0.661*Ti**0.5*(1.0-0.047*numpy.log10(Ti))**2.0
+    OpO = 0.367*Tr**0.5*(1.0-0.064*numpy.log10(Tr))**2.0
+    COpCO = 0.342*Tr**0.5*(1.0-0.085*numpy.log10(Tr))**2.0
+    N2pN2 = 0.514*Tr**0.5*(1.0-0.073*numpy.log10(Tr))**2.0
+    O2pO2 = 0.259*Tr**0.5*(1.0-0.063*numpy.log10(Tr))**2.0
+    CO2pCO2 = 0.285*Tr**0.5*(1.0-0.083*numpy.log10(Tr))**2.0
     
     Cin = {
         'H+':   {'H':HpH, 'He':10.6, 'N':26.1,'O':HpO, 'CO':35.6, 'N2':33.6, 'O2':32.0, 'CO2':41.4},
@@ -125,7 +125,7 @@ def getCen(n,Te=1000.0):
         'He':0.46*Te**0.5,
         'H':45.0*(1.0-1.35e-4*Te)*Te**0.5, 
         'CO':0.234*(Te+165.0), 
-        'CO2':368.0*(1.0+4.1e-11*scipy.absolute(4500.0-Te)**2.93),
+        'CO2':368.0*(1.0+4.1e-11*numpy.absolute(4500.0-Te)**2.93),
     }
 
     try:

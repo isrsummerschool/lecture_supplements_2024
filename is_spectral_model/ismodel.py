@@ -8,6 +8,7 @@ M Nicolls - 2011-2013
 
 import sys
 import scipy,scipy.constants,scipy.fftpack
+import numpy
 import time
 
 from sommerfeldIntegral2 import *
@@ -197,7 +198,7 @@ class ISspec:
         try: 
             self.Params['vi'] = numpy.array(input['vi'])
         except:
-            self.Params['vi'] = scipy.zeros(self.mi.shape)
+            self.Params['vi'] = numpy.zeros(self.mi.shape)
 
         try: 
             self.Params['nuen'] = input['nuen']            
@@ -207,7 +208,7 @@ class ISspec:
         try: 
             self.Params['nuin'] = numpy.array(input['nuin'])
         except:
-            self.Params['nuin'] = scipy.zeros(self.mi.shape)                   
+            self.Params['nuin'] = numpy.zeros(self.mi.shape)                   
 
         if not self.override:
             self.checkParams()
@@ -234,8 +235,8 @@ class ISspec:
                     ):
                 raise ValueError('mui, ni, mi, vi, nuin must have length Nion')
 
-            if scipy.absolute(1.0 - scipy.sum(self.Params['ni']))/len(self.Params['ni'])>1.0e-6:
-                raise ValueError("ni must add to 1.0, currently adds to %2.7f" % scipy.sum(self.Params['ni']))
+            if numpy.absolute(1.0 - numpy.sum(self.Params['ni']))/len(self.Params['ni'])>1.0e-6:
+                raise ValueError("ni must add to 1.0, currently adds to %2.7f" % numpy.sum(self.Params['ni']))
         
             for ion in self.mi_amu:
                 if not str(int(ion)) in self.Amu2Ion.keys():
@@ -275,16 +276,16 @@ class ISspec:
         lambd=2.0*pi/k 
                     
         # electron and ion thermal speeds
-        Ce=scipy.sqrt(scipy.constants.k*self.Params['te']/scipy.constants.m_e) 
-        Ci=scipy.sqrt(scipy.constants.k*self.Params['ti']/self.mi)
+        Ce=numpy.sqrt(scipy.constants.k*self.Params['te']/scipy.constants.m_e) 
+        Ci=numpy.sqrt(scipy.constants.k*self.Params['ti']/self.mi)
         
         # electron and ion gyro frequencies
         Oe=scipy.constants.e*self.Params['B']/scipy.constants.m_e 
         Oi=scipy.constants.e*self.Params['B']/self.mi 
                 
         # electron and ion plasma frequency
-        wpe=scipy.sqrt(self.Params['ne']*scipy.constants.e**2/scipy.constants.m_e/scipy.constants.epsilon_0) 
-        wpi=scipy.sqrt(self.Params['ni']*self.Params['ne']*scipy.constants.e**2/self.mi/scipy.constants.epsilon_0)
+        wpe=numpy.sqrt(self.Params['ne']*scipy.constants.e**2/scipy.constants.m_e/scipy.constants.epsilon_0) 
+        wpi=numpy.sqrt(self.Params['ni']*self.Params['ne']*scipy.constants.e**2/self.mi/scipy.constants.epsilon_0)
         
         # electron, ion, and plasma debye length
         he=Ce/wpe 
@@ -292,35 +293,35 @@ class ISspec:
         # coulomb collisions
         if self.emode[1]:
             nuei = 1e-6*54.5*self.Params['ne']/self.Params['te']**1.5 # Schunk and Nagy 4.144
-            nuee = 1e-6*54.5/scipy.sqrt(2.0)*self.Params['ne']/self.Params['te']**1.5 # Schunk and Nagy 4.145
+            nuee = 1e-6*54.5/numpy.sqrt(2.0)*self.Params['ne']/self.Params['te']**1.5 # Schunk and Nagy 4.145
             
-            psiec_par = nuei/(k*Ce*scipy.sqrt(2.0))
-            psiec_perp = (nuei+nuee)/(k*Ce*scipy.sqrt(2.0))
+            psiec_par = nuei/(k*Ce*numpy.sqrt(2.0))
+            psiec_perp = (nuei+nuee)/(k*Ce*numpy.sqrt(2.0))
                                                
         else:
             psiec_par = 0.0
             psiec_perp = 0.0
             
         if self.imode[1]:
-            psiic = scipy.zeros(self.mi.shape)        
+            psiic = numpy.zeros(self.mi.shape)        
             for i1 in range(self.Nion):
                 for i2 in range(self.Nion):
                     if self.Params['ni'][i2]>1.0e-6:
                         tb = collisionCoeffs.getBst(self.mi_amu[i1],self.mi_amu[i2])
                         psiic[i1] = psiic[i1] + tb*self.Params['ni'][i2]*self.Params['ne']*1.0e-6/self.Params['ti'][i2]**1.5 # Schunk and Nagy 4.143                        
-            psiic = psiic/(k*Ci*scipy.sqrt(2.0))
+            psiic = psiic/(k*Ci*numpy.sqrt(2.0))
         else:
-            psiic = scipy.zeros(self.mi.shape)
+            psiic = numpy.zeros(self.mi.shape)
         
         # neutral collisions
         if self.emode[2]:
-            psien = self.Params['nuen']/(k*Ce*scipy.sqrt(2))
+            psien = self.Params['nuen']/(k*Ce*numpy.sqrt(2))
         else:
             psien = 0.0
         if self.imode[2]:
-            psiin = self.Params['nuin']/(k*Ci*scipy.sqrt(2))
+            psiin = self.Params['nuin']/(k*Ci*numpy.sqrt(2))
         else:
-            psiin = scipy.zeros(self.mi.shape)
+            psiin = numpy.zeros(self.mi.shape)
                 
         ####
  
@@ -328,22 +329,22 @@ class ISspec:
         if self.fmax>0.0:
             fmax = self.fmax
         else:
-            fmax=scipy.sum(self.Params['ni']*k*Ci*scipy.sqrt(2.0))/2.0+scipy.absolute(self.Params['vi']).max()/lambd
+            fmax=numpy.sum(self.Params['ni']*k*Ci*numpy.sqrt(2.0))/2.0+numpy.absolute(self.Params['vi']).max()/lambd
         
         fmin=-fmax
-        ff=scipy.linspace(fmin,fmax,self.Nfreq);
+        ff=numpy.linspace(fmin,fmax,self.Nfreq);
         ww=2.0*pi*ff
         
         # special normalized frequencies
-        thetae = (ww + k*self.Params['ve'])/(k*Ce*scipy.sqrt(2.0)) 
-        thetai=(scipy.repeat(ww[:,scipy.newaxis],self.Nion,axis=1) + k*self.Params['vi'])/(k*Ci*scipy.sqrt(2.0))  
+        thetae = (ww + k*self.Params['ve'])/(k*Ce*numpy.sqrt(2.0)) 
+        thetai=(numpy.repeat(ww[:,numpy.newaxis],self.Nion,axis=1) + k*self.Params['vi'])/(k*Ci*numpy.sqrt(2.0))  
         
-        phie=Oe/(k*Ce*scipy.sqrt(2))
-        phii=Oi/(k*Ci*scipy.sqrt(2))
+        phie=Oe/(k*Ce*numpy.sqrt(2))
+        phii=Oi/(k*Ci*numpy.sqrt(2))
         
         # compute Gordeyev integrals
-        Ji=scipy.zeros(thetai.shape,dtype='complex64')
-        Je=scipy.zeros(thetae.shape,dtype='complex64')    
+        Ji=numpy.zeros(thetai.shape,dtype='complex64')
+        Je=numpy.zeros(thetae.shape,dtype='complex64')    
         
         Je,Nl=self.gordeyev_cz(thetae,(alphae,phie,psien,psiec_par,psiec_perp),czparams=self.czparamse)
 
@@ -362,31 +363,31 @@ class ISspec:
         # normalize if requested
         if self.normalize==1:
             acf=acf.real
-            acf=acf/acf[int(scipy.floor(tau.size/2.0))]
+            acf=acf/acf[int(numpy.floor(tau.size/2.0))]
     
         return ff,spec,tau,acf
             
     def compute_spec(self,Je,Ji,thetae,thetai,Ce,Ci,ni,mui,he,k):
         
         # ions
-        sis = scipy.zeros(thetae.shape,dtype='complex64')
-        nthi = scipy.zeros(thetae.shape,dtype='float64')
+        sis = numpy.zeros(thetae.shape,dtype='complex64')
+        nthi = numpy.zeros(thetae.shape,dtype='float64')
         for ithi in range(self.Nion):
             # ion conductivity
             sis = sis + ni[ithi]*mui[ithi]*(1.0 - 1.0j*thetai[:,ithi]*Ji[:,ithi])/(k*k*he*he)
             # ion density thermal fluctuation spectrum
-            nthi = nthi + ni[ithi]/scipy.sqrt(2.0)/k/Ci[ithi]*2.0*Ji[:,ithi].real
+            nthi = nthi + ni[ithi]/numpy.sqrt(2.0)/k/Ci[ithi]*2.0*Ji[:,ithi].real
             
         # electron conductivity
         ses = (1.0 - 1.0j*thetae*Je)/(k*k*he*he)
 
         # electron thermal fluctuation spectrum
-        nthe = 2.0*Je.real/scipy.sqrt(2.0)/k/Ce
+        nthe = 2.0*Je.real/numpy.sqrt(2.0)/k/Ce
         
         # numerators and denominator
-        num1 = scipy.power(scipy.absolute(1.0+sis),2.0)*nthe
-        num2 = scipy.power(scipy.absolute(ses),2.0)*nthi
-        den = scipy.power(scipy.absolute(1.0+sis+ses),2.0)
+        num1 = numpy.power(numpy.absolute(1.0+sis),2.0)*nthe
+        num2 = numpy.power(numpy.absolute(ses),2.0)*nthi
+        den = numpy.power(numpy.absolute(1.0+sis+ses),2.0)
 
         # spectrum
         spec=(num1+num2)/den
@@ -443,29 +444,29 @@ class ISspec:
         (alpha,phi,psin,psic_par,psic_perp) = inputParams
         
         # collisional term
-        K0 = scipy.exp(-t*psin) 
+        K0 = numpy.exp(-t*psin) 
         
         # coulomb collisions
         if (psic_par+psic_perp)>1e-6:
             
             alpha=pi/2.0-alpha
 
-            ca2 = scipy.power(scipy.cos(alpha),2.0)
-            sa2 = scipy.power(scipy.sin(alpha),2.0)
+            ca2 = numpy.power(numpy.cos(alpha),2.0)
+            sa2 = numpy.power(numpy.sin(alpha),2.0)
 
             # parallel term
-            K1 = scipy.exp(-(0.5*sa2/(psic_par*psic_par)*(psic_par*t-1.0+scipy.exp(-psic_par*t)))) 
+            K1 = numpy.exp(-(0.5*sa2/(psic_par*psic_par)*(psic_par*t-1.0+numpy.exp(-psic_par*t)))) 
 
             # perpendicular term
-            gamma = scipy.arctan(psic_perp/phi)
-            K2 = scipy.exp(-(0.5*ca2/(phi*phi+psic_perp*psic_perp)*(scipy.cos(2.0*gamma)+psic_perp*t-scipy.exp(-psic_perp*t)*scipy.cos(phi*t-2.0*gamma)))) 
+            gamma = numpy.arctan(psic_perp/phi)
+            K2 = numpy.exp(-(0.5*ca2/(phi*phi+psic_perp*psic_perp)*(numpy.cos(2.0*gamma)+psic_perp*t-numpy.exp(-psic_perp*t)*numpy.cos(phi*t-2.0*gamma)))) 
 
         else:
 
-            ca2 = scipy.power(scipy.cos(alpha),2.0)
-            sa2 = scipy.power(scipy.sin(alpha),2.0)
+            ca2 = numpy.power(numpy.cos(alpha),2.0)
+            sa2 = numpy.power(numpy.sin(alpha),2.0)
             
-            K1=scipy.exp(-sa2*scipy.power(scipy.sin(0.5*phi*t),2.0)/(phi*phi)-0.25*t*t*ca2)
+            K1=numpy.exp(-sa2*numpy.power(numpy.sin(0.5*phi*t),2.0)/(phi*phi)-0.25*t*t*ca2)
             K2=1.0        
 
         val = K0*K1*K2
@@ -479,14 +480,14 @@ class ISspec:
         Nspec=s.size
 
         zsize=Nspec*3
-        if scipy.mod(Nspec,2.0)==0.0:
+        if numpy.mod(Nspec,2.0)==0.0:
             zsize=Nspec/2.0
 
-        spec=scipy.concatenate((scipy.zeros((zsize),dtype='float64'),s,scipy.zeros((zsize),dtype='float64')),axis=0) # zero pad the spectra
+        spec=numpy.concatenate((numpy.zeros((zsize),dtype='float64'),s,numpy.zeros((zsize),dtype='float64')),axis=0) # zero pad the spectra
         
         NFFT=spec.size
         df=f[1]-f[0]
-        tau=scipy.linspace(-1.0/df/2.0,1.0/df/2.0,NFFT)
+        tau=numpy.linspace(-1.0/df/2.0,1.0/df/2.0,NFFT)
         dtau=tau[1]-tau[0]
 
         m=scipy.fftpack.fftshift(scipy.fftpack.ifft(scipy.fftpack.ifftshift(spec)))/dtau
